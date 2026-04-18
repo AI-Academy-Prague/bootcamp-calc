@@ -106,13 +106,13 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
           </div>
           <template v-if="p.rentType==='monthly'">
             <div class="col">
-              <label>Аренда/мес (CZK)</label>
+              <label>Аренда/мес ({{ curSymbol }})</label>
               <input type="number" v-model.number="p.rentMonthly" step="1000">
             </div>
           </template>
           <template v-else>
             <div class="col">
-              <label>CZK/час</label>
+              <label>{{ curSymbol }}/час</label>
               <input type="number" v-model.number="p.rentPerHour" step="50">
             </div>
             <div class="col">
@@ -141,10 +141,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
             </select>
           </div>
           <template v-if="p.adminType==='monthly'">
-            <div class="col"><label>ЗП/мес (CZK)</label><input type="number" v-model.number="p.adminSalary" step="1000"></div>
+            <div class="col"><label>ЗП/мес ({{ curSymbol }})</label><input type="number" v-model.number="p.adminSalary" step="1000"></div>
           </template>
           <template v-else>
-            <div class="col"><label>CZK/час</label><input type="number" v-model.number="p.adminRate" step="50"></div>
+            <div class="col"><label>{{ curSymbol }}/час</label><input type="number" v-model.number="p.adminRate" step="50"></div>
             <div class="col"><label>Часов/нед</label><input type="number" v-model.number="p.adminHours" step="1"></div>
           </template>
         </div>
@@ -159,10 +159,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
             </select>
           </div>
           <template v-if="p.baseType==='monthly'">
-            <div class="col"><label>ЗП/мес (CZK)</label><input type="number" v-model.number="p.baseSalary" step="1000"></div>
+            <div class="col"><label>ЗП/мес ({{ curSymbol }})</label><input type="number" v-model.number="p.baseSalary" step="1000"></div>
           </template>
           <template v-else>
-            <div class="col"><label>CZK/час</label><input type="number" v-model.number="p.baseRate" step="50"></div>
+            <div class="col"><label>{{ curSymbol }}/час</label><input type="number" v-model.number="p.baseRate" step="50"></div>
             <div class="col"><label>Часов/нед</label><input type="number" v-model.number="p.baseHours" step="1"></div>
           </template>
         </div>
@@ -181,10 +181,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
             </select>
           </div>
           <template v-if="p.topicType==='monthly'">
-            <div class="col"><label>ЗП/мес каждый (CZK)</label><input type="number" v-model.number="p.topicSalary" step="1000"></div>
+            <div class="col"><label>ЗП/мес каждый ({{ curSymbol }})</label><input type="number" v-model.number="p.topicSalary" step="1000"></div>
           </template>
           <template v-else>
-            <div class="col"><label>CZK/час</label><input type="number" v-model.number="p.topicRate" step="50"></div>
+            <div class="col"><label>{{ curSymbol }}/час</label><input type="number" v-model.number="p.topicRate" step="50"></div>
             <div class="col"><label>Часов/нед</label><input type="number" v-model.number="p.topicHoursWeek" step="1"></div>
           </template>
         </div>
@@ -194,7 +194,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <div class="card">
         <div class="card-title"><span class="dot" style="background:var(--green)"></span> Маркетинг</div>
         <div class="row">
-          <div class="col"><label>Маркетинг/мес (CZK)</label><input type="number" v-model.number="p.marketing" step="1000"></div>
+          <div class="col"><label>Маркетинг/мес ({{ curSymbol }})</label><input type="number" v-model.number="p.marketing" step="1000"></div>
         </div>
       </div>
 
@@ -232,7 +232,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <div class="card">
         <div class="card-title"><span class="dot" style="background:var(--green)"></span> <span style="color:var(--green)">Базовый курс</span></div>
         <div class="row">
-          <div class="col"><label>Цена курса (CZK)</label><input type="number" v-model.number="p.baseCoursePrice" step="500"></div>
+          <div class="col"><label>Цена курса ({{ curSymbol }})</label><input type="number" v-model.number="p.baseCoursePrice" step="500"></div>
           <div class="col"><label>Прямые продажи (доп.)</label><input type="number" v-model.number="p.baseCourseDirect" step="1"></div>
           <div class="col"><label>= всего учеников</label><input type="number" :value="baseCourseStudents" disabled style="color:var(--green)"></div>
         </div>
@@ -242,7 +242,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <div class="card">
         <div class="card-title"><span class="dot" style="background:var(--blue)"></span> <span style="color:var(--blue)">Подписка</span> опен спейс</div>
         <div class="row">
-          <div class="col"><label>Цена/мес (CZK)</label><input type="number" v-model.number="p.subPrice" step="500"></div>
+          <div class="col"><label>Цена/мес ({{ curSymbol }})</label><input type="number" v-model.number="p.subPrice" step="500"></div>
           <div class="col"><label>Подписчиков</label><input type="number" v-model.number="p.subCount" step="1"></div>
         </div>
       </div>
@@ -251,7 +251,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <div class="card">
         <div class="card-title"><span class="dot" style="background:var(--orange)"></span> <span style="color:var(--orange)">Тематические</span> курсы</div>
         <div class="row">
-          <div class="col"><label>Цена курса (CZK)</label><input type="number" v-model.number="p.topicCoursePrice" step="500"></div>
+          <div class="col"><label>Цена курса ({{ curSymbol }})</label><input type="number" v-model.number="p.topicCoursePrice" step="500"></div>
           <div class="col"><label>Курсов/мес</label><input type="number" v-model.number="p.topicCoursesPerMonth" step="1"></div>
           <div class="col"><label>Учеников/курс</label><input type="number" v-model.number="p.topicStudentsPerCourse" step="1"></div>
         </div>
@@ -322,9 +322,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <!-- Прибыль -->
       <div class="result-card">
         <div class="result-title">Прибыль / мес</div>
-        <div class="metric-big" :class="netProfit >= 0 ? 'positive' : 'negative'">{{ netProfit >= 0 ? '+' : '' }}{{ cfmt(netProfit) }} {{ curSymbol }}</div>
+        <div class="metric-big" :class="netProfit >= 0 ? 'positive' : 'negative'">{{ netProfit >= 0 ? '+' : '' }}{{ fmt(netProfit) }} {{ curSymbol }}</div>
         <div class="metric-sub">Маржа: <strong :class="netMargin >= 0 ? 'positive' : 'negative'">{{ netMargin }}%</strong></div>
-        <div v-show="p.taxEnabled" class="metric-sub" style="color:var(--orange)">налоги: -{{ cfmt(taxAmount) }} {{ curSymbol }} (налог {{ cfmt(taxOnProfit) }} + соцвзносы {{ cfmt(taxOnSalary) }})</div>
+        <div v-show="p.taxEnabled" class="metric-sub" style="color:var(--orange)">налоги: -{{ fmt(taxAmount) }} {{ curSymbol }} (налог {{ fmt(taxOnProfit) }} + соцвзносы {{ fmt(taxOnSalary) }})</div>
         <div class="bar-track">
           <div class="bar-fill" :style="{ width: barWidth + '%', background: netProfit >= 0 ? 'var(--green)' : 'var(--red)' }"></div>
         </div>
@@ -332,31 +332,31 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
 
       <!-- Доходы -->
       <div class="result-card">
-        <div class="result-title">Доход: <span class="positive">{{ cfmt(totalRevenue) }} {{ curSymbol }}</span></div>
-        <div class="brow"><span class="l"><span style="color:var(--green)">Базовый</span> курс ({{ baseCourseStudents }} уч.)</span><span class="v">{{ cfmt(revBaseCourse) }}</span></div>
-        <div class="brow"><span class="l"><span style="color:var(--blue)">Подписка</span> ({{ p.subCount }} подп.)</span><span class="v">{{ cfmt(revSub) }}</span></div>
-        <div class="brow"><span class="l"><span style="color:var(--orange)">Тем. курсы</span> ({{ p.topicCoursesPerMonth }}x{{ p.topicStudentsPerCourse }})</span><span class="v">{{ cfmt(revTopicCourses) }}</span></div>
+        <div class="result-title">Доход: <span class="positive">{{ fmt(totalRevenue) }} {{ curSymbol }}</span></div>
+        <div class="brow"><span class="l"><span style="color:var(--green)">Базовый</span> курс ({{ baseCourseStudents }} уч.)</span><span class="v">{{ fmt(revBaseCourse) }}</span></div>
+        <div class="brow"><span class="l"><span style="color:var(--blue)">Подписка</span> ({{ p.subCount }} подп.)</span><span class="v">{{ fmt(revSub) }}</span></div>
+        <div class="brow"><span class="l"><span style="color:var(--orange)">Тем. курсы</span> ({{ p.topicCoursesPerMonth }}x{{ p.topicStudentsPerCourse }})</span><span class="v">{{ fmt(revTopicCourses) }}</span></div>
       </div>
 
       <!-- Расходы -->
       <div class="result-card">
-        <div class="result-title">Расходы: <span class="negative">{{ cfmt(totalExpenses) }} {{ curSymbol }}</span></div>
-        <div class="brow"><span class="l">Аренда</span><span class="v">{{ cfmt(expRent) }}</span></div>
-        <div class="brow"><span class="l">Сотрудники</span><span class="v">{{ cfmt(expAllStaff) }}</span></div>
-        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Админ-учитель</span><span class="v" style="color:var(--dim)">{{ cfmt(expAdmin) }}</span></div>
-        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Учитель баз. курса</span><span class="v" style="color:var(--dim)">{{ cfmt(expBase) }}</span></div>
-        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Тем. преподаватели (x{{ p.topicTeachers }})</span><span class="v" style="color:var(--dim)">{{ cfmt(expTopic) }}</span></div>
-        <div class="brow"><span class="l">Маркетинг</span><span class="v">{{ cfmt(expMarketing) }}</span></div>
-        <div class="brow"><span class="l">Содержание</span><span class="v">{{ cfmt(expOps) }}</span></div>
+        <div class="result-title">Расходы: <span class="negative">{{ fmt(totalExpenses) }} {{ curSymbol }}</span></div>
+        <div class="brow"><span class="l">Аренда</span><span class="v">{{ fmt(expRent) }}</span></div>
+        <div class="brow"><span class="l">Сотрудники</span><span class="v">{{ fmt(expAllStaff) }}</span></div>
+        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Админ-учитель</span><span class="v" style="color:var(--dim)">{{ fmt(expAdmin) }}</span></div>
+        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Учитель баз. курса</span><span class="v" style="color:var(--dim)">{{ fmt(expBase) }}</span></div>
+        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Тем. преподаватели (x{{ p.topicTeachers }})</span><span class="v" style="color:var(--dim)">{{ fmt(expTopic) }}</span></div>
+        <div class="brow"><span class="l">Маркетинг</span><span class="v">{{ fmt(expMarketing) }}</span></div>
+        <div class="brow"><span class="l">Содержание</span><span class="v">{{ fmt(expOps) }}</span></div>
       </div>
 
       <!-- Юнит-экономика -->
       <div class="result-card">
         <div class="result-title">Юнит-экономика</div>
         <div class="brow"><span class="l">Детей/мес</span><span class="v">{{ uniqueKids }}</span></div>
-        <div class="brow"><span class="l">Доход/ребёнок</span><span class="v neutral">{{ cfmt(revenuePerKid) }} {{ curSymbol }}</span></div>
-        <div class="brow"><span class="l">Расход/ребёнок</span><span class="v">{{ cfmt(costPerKid) }} {{ curSymbol }}</span></div>
-        <div class="brow"><span class="l">Прибыль/ребёнок</span><span class="v" :class="profitPerKid>=0?'positive':'negative'">{{ cfmt(profitPerKid) }} {{ curSymbol }}</span></div>
+        <div class="brow"><span class="l">Доход/ребёнок</span><span class="v neutral">{{ fmt(revenuePerKid) }} {{ curSymbol }}</span></div>
+        <div class="brow"><span class="l">Расход/ребёнок</span><span class="v">{{ fmt(costPerKid) }} {{ curSymbol }}</span></div>
+        <div class="brow"><span class="l">Прибыль/ребёнок</span><span class="v" :class="profitPerKid>=0?'positive':'negative'">{{ fmt(profitPerKid) }} {{ curSymbol }}</span></div>
       </div>
 
       <!-- Безубыточность + окупаемость -->
@@ -366,19 +366,19 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
           <div class="sc">
             <div class="sc-label">Подписчиков</div>
             <div class="sc-val neutral">{{ breakEvenSubs }}</div>
-            <div class="sc-desc">по {{ cfmt(p.subPrice) }} {{ curSymbol }}</div>
+            <div class="sc-desc">по {{ fmt(p.subPrice) }} {{ curSymbol }}</div>
           </div>
           <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--surface);border:1px solid var(--border);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;z-index:1">или</div>
           <div class="sc">
             <div class="sc-label">Уч. баз. курса</div>
             <div class="sc-val neutral">{{ breakEvenBase }}</div>
-            <div class="sc-desc">по {{ cfmt(p.baseCoursePrice) }} {{ curSymbol }}</div>
+            <div class="sc-desc">по {{ fmt(p.baseCoursePrice) }} {{ curSymbol }}</div>
           </div>
         </div>
       </div>
 
       <div class="result-card">
-        <div class="result-title">Стартовые: <span class="negative">{{ cfmt(totalInit) }} {{ curSymbol }}</span></div>
+        <div class="result-title">Стартовые: <span class="negative">{{ fmt(totalInit) }} {{ curSymbol }}</span></div>
         <div class="scenarios">
           <div class="sc">
             <div class="sc-label">Окупаемость</div>
@@ -387,7 +387,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
           </div>
           <div class="sc">
             <div class="sc-label">Прибыль/год</div>
-            <div class="sc-val" :class="netProfit>=0?'positive':'negative'">{{ cfmt(netProfit*12) }}</div>
+            <div class="sc-val" :class="netProfit>=0?'positive':'negative'">{{ fmt(netProfit*12) }}</div>
             <div class="sc-desc">{{ curSymbol }}/год</div>
           </div>
         </div>
@@ -469,9 +469,21 @@ createApp({
       const n = Math.round(Number(v) || 0)
       return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
     }
-    const curRate = computed(() => (currencies.find(c => c.code === p.currency) || currencies[0]).rate)
     const curSymbol = computed(() => (currencies.find(c => c.code === p.currency) || currencies[0]).symbol)
-    const cfmt = v => fmt(Math.round((Number(v) || 0) * curRate.value))
+
+    const moneyFields = [
+      'rentMonthly','rentPerHour','adminSalary','adminRate','baseSalary','baseRate',
+      'topicSalary','topicRate','utilities','internet','cleaning','marketing',
+      'snacks','insurance','software','equipmentRent','buffer',
+      'baseCoursePrice','subPrice','topicCoursePrice',
+      'initRenovation','initEquipment','initMarketing','initOther'
+    ]
+    watch(() => p.currency, (newCur, oldCur) => {
+      const oldRate = (currencies.find(c => c.code === oldCur) || currencies[0]).rate
+      const newRate = (currencies.find(c => c.code === newCur) || currencies[0]).rate
+      const ratio = newRate / oldRate
+      moneyFields.forEach(f => { p[f] = Math.round(p[f] * ratio) })
+    })
 
     // EXPENSES
     const expRent = computed(() => p.rentType === 'hourly'
@@ -550,7 +562,7 @@ createApp({
     })
 
     return {
-      p, fmt, cfmt, currencies, curSymbol,
+      p, fmt, currencies, curSymbol,
       expRent, expAdmin, expBase, expTopic, expAllStaff, expMarketing, expOps, totalExpenses,
       leadsToBase, baseCourseStudents, revBaseCourse, revSub, revTopicCourses, totalRevenue,
       profit, margin, barWidth, taxOnProfit, taxOnSalary, taxAmount, netProfit, netMargin,
