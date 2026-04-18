@@ -273,21 +273,44 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
           <span class="sw"></span>
           Учитывать налоги
         </label>
-        <div class="row" v-show="p.taxEnabled">
-          <div class="col">
-            <label>Ставка налога (%)</label>
-            <input type="number" v-model.number="p.taxRate" step="1" min="0" max="100">
+        <div v-show="p.taxEnabled">
+          <div class="row">
+            <div class="col">
+              <label>Форма</label>
+              <select v-model="p.taxForm">
+                <option value="sro">s.r.o. (ООО)</option>
+                <option value="osvc">OSVČ (ИП)</option>
+                <option value="custom">Своя ставка</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Налог на прибыль (%)</label>
+              <input type="number" v-model.number="p.taxRate" step="1" min="0" max="100">
+            </div>
+            <div class="col">
+              <label>Соцвзносы на ЗП (%)</label>
+              <input type="number" v-model.number="p.socialOnSalary" step="1" min="0" max="100">
+            </div>
           </div>
-          <div class="col">
-            <label>Соц./здрав. взносы (%)</label>
-            <input type="number" v-model.number="p.socialRate" step="1" min="0" max="100">
+          <div class="row">
+            <div class="col">
+              <label>= налог на прибыль/мес</label>
+              <input type="number" :value="taxOnProfit" disabled style="color:var(--orange)">
+            </div>
+            <div class="col">
+              <label>= соцвзносы на ЗП/мес</label>
+              <input type="number" :value="taxOnSalary" disabled style="color:var(--orange)">
+            </div>
+            <div class="col">
+              <label>= итого налоги/мес</label>
+              <input type="number" :value="taxAmount" disabled style="color:var(--orange)">
+            </div>
           </div>
-          <div class="col">
-            <label>= налоги/мес</label>
-            <input type="number" :value="taxAmount" disabled style="color:var(--orange)">
+          <div style="font-size:11px;color:var(--dim);margin-top:4px">
+            s.r.o.: 21% на прибыль + 33.8% соцвзносы работодателя на ЗП<br>
+            OSVČ: 15% НДФЛ + соц/здрав ~21.4% от 50% прибыли (учтено в ставке)
           </div>
         </div>
-        <div v-show="p.taxEnabled" style="font-size:11px;color:var(--dim);margin-top:4px">CZ: OSVČ ~15% налог + ~45% соцвзносы от прибыли, s.r.o. ~21% + ~34%</div>
       </div>
     </div>
 
@@ -298,7 +321,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
         <div class="result-title">Прибыль / мес</div>
         <div class="metric-big" :class="netProfit >= 0 ? 'positive' : 'negative'">{{ netProfit >= 0 ? '+' : '' }}{{ fmt(netProfit) }} Kc</div>
         <div class="metric-sub">~{{ fmt(Math.round(netProfit / 25)) }} EUR | Маржа: <strong :class="netMargin >= 0 ? 'positive' : 'negative'">{{ netMargin }}%</strong></div>
-        <div v-show="p.taxEnabled" class="metric-sub" style="color:var(--orange)">налоги: -{{ fmt(taxAmount) }} Kc (до налогов: {{ fmt(profit) }})</div>
+        <div v-show="p.taxEnabled" class="metric-sub" style="color:var(--orange)">налоги: -{{ fmt(taxAmount) }} Kc (налог {{ fmt(taxOnProfit) }} + соцвзносы {{ fmt(taxOnSalary) }})</div>
         <div class="bar-track">
           <div class="bar-fill" :style="{ width: barWidth + '%', background: netProfit >= 0 ? 'var(--green)' : 'var(--red)' }"></div>
         </div>
@@ -369,7 +392,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
 </div>
 
 <script>
-const {createApp, reactive, computed, ref} = Vue
+const {createApp, reactive, computed, ref, watch} = Vue
 
 createApp({
   setup(){
@@ -422,8 +445,9 @@ createApp({
       initOther: 30000,
       // Налоги
       taxEnabled: false,
-      taxRate: 15,
-      socialRate: 45,
+      taxForm: 'sro',
+      taxRate: 21,
+      socialOnSalary: 34,
     })
 
     const num = v => Number(v) || 0
@@ -463,10 +487,23 @@ createApp({
 
     // PROFIT
     const profit = computed(() => totalRevenue.value - totalExpenses.value)
-    const taxAmount = computed(() => {
-      if (!p.taxEnabled || profit.value <= 0) return 0
-      return Math.round(profit.value * (num(p.taxRate) + num(p.socialRate)) / 100)
+    // Auto-set rates when form changes
+    watch(() => p.taxForm, (form) => {
+      if (form === 'sro') { p.taxRate = 21; p.socialOnSalary = 34; }
+      else if (form === 'osvc') { p.taxRate = 26; p.socialOnSalary = 0; }
     })
+
+    // Tax on profit (income/corporate tax)
+    const taxOnProfit = computed(() => {
+      if (!p.taxEnabled || profit.value <= 0) return 0
+      return Math.round(profit.value * num(p.taxRate) / 100)
+    })
+    // Social contributions on salaries (employer pays on top of gross salary)
+    const taxOnSalary = computed(() => {
+      if (!p.taxEnabled) return 0
+      return Math.round(expAllStaff.value * num(p.socialOnSalary) / 100)
+    })
+    const taxAmount = computed(() => taxOnProfit.value + taxOnSalary.value)
     const netProfit = computed(() => profit.value - taxAmount.value)
     const netMargin = computed(() => totalRevenue.value > 0 ? Math.round(netProfit.value / totalRevenue.value * 100) : 0)
     const margin = computed(() => totalRevenue.value > 0 ? Math.round(profit.value / totalRevenue.value * 100) : 0)
@@ -498,7 +535,7 @@ createApp({
       p, fmt,
       expRent, expAdmin, expBase, expTopic, expAllStaff, expOps, totalExpenses,
       leadsToBase, baseCourseStudents, revBaseCourse, revSub, revTopicCourses, totalRevenue,
-      profit, margin, barWidth, taxAmount, netProfit, netMargin,
+      profit, margin, barWidth, taxOnProfit, taxOnSalary, taxAmount, netProfit, netMargin,
       uniqueKids, revenuePerKid, costPerKid, profitPerKid,
       breakEvenSubs, breakEvenBase,
       totalInit, paybackMonths,
