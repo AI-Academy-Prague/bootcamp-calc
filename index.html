@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bootcamp — Калькулятор</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#232735;--border:#2e3245;
+  --text:#e4e4e8;--muted:#8b8fa3;--dim:#5c6078;
+  --green:#34d399;--red:#f87171;--blue:#60a5fa;
+  --orange:#fbbf24;--purple:#a78bfa;--cyan:#22d3ee;
+  --radius:8px;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.4;min-height:100vh;font-size:13px}
+.app{max-width:1400px;margin:0 auto;padding:16px 20px 40px}
+
+header{text-align:center;padding:16px 0 20px}
+header h1{font-size:22px;font-weight:700;letter-spacing:-.5px}
+header h1 span{color:var(--blue)}
+
+.layout{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+
+.sections{display:flex;flex-direction:column;gap:16px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.card-title .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+.row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.row:last-child{margin-bottom:0}
+.col{flex:1;min-width:100px}
+.col label{display:block;font-size:11px;color:var(--muted);margin-bottom:3px;white-space:nowrap}
+.col input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;font-variant-numeric:tabular-nums}
+.col input:focus{border-color:var(--blue)}
+input[type=number]::-webkit-inner-spin-button{opacity:.3}
+
+.col select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer}
+
+.hint{color:var(--dim);font-size:11px;margin-top:-4px;margin-bottom:8px}
+
+/* Sticky results */
+.results{position:sticky;top:16px}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.result-card:last-child{margin-bottom:0}
+.result-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:var(--muted)}
+
+.metric-big{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.metric-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+.brow{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.brow:last-child{border-bottom:none}
+.brow .l{color:var(--muted)}
+.brow .v{font-weight:500;font-variant-numeric:tabular-nums}
+
+.positive{color:var(--green)}
+.negative{color:var(--red)}
+.neutral{color:var(--blue)}
+
+.bar-track{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-top:8px}
+.bar-fill{height:100%;border-radius:3px;transition:width .3s ease}
+
+.scenarios{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sc{background:var(--surface2);border-radius:6px;padding:10px;text-align:center}
+.sc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.sc-val{font-size:18px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.sc-desc{font-size:10px;color:var(--dim);margin-top:1px}
+
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--dim);margin-bottom:6px;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="app">
+  <header>
+    <h1>AI Bootcamp <span>Praha</span> — Калькулятор</h1>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT: ALL INPUTS -->
+    <div class="sections">
+
+      <!-- РАСХОДЫ -->
+      <div class="section-label">Расходы / мес</div>
+
+      <!-- 1. Аренда -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--blue)"></span> Аренда помещения</div>
+        <div class="row">
+          <div class="col">
+            <label>Тип</label>
+            <select v-model="p.rentType">
+              <option value="monthly">За месяц</option>
+              <option value="hourly">По часам</option>
+            </select>
+          </div>
+          <template v-if="p.rentType==='monthly'">
+            <div class="col">
+              <label>Аренда/мес (Kc)</label>
+              <input type="number" v-model.number="p.rentMonthly" step="1000">
+            </div>
+          </template>
+          <template v-else>
+            <div class="col">
+              <label>Kc/час</label>
+              <input type="number" v-model.number="p.rentPerHour" step="50">
+            </div>
+            <div class="col">
+              <label>Часов/день</label>
+              <input type="number" v-model.number="p.rentHoursPerDay" step="1">
+            </div>
+            <div class="col">
+              <label>Дней/мес</label>
+              <input type="number" v-model.number="p.workDays" step="1">
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- 2. Оборудование -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Аренда оборудования</div>
+        <div class="row">
+          <div class="col">
+            <label>Аренда оборудования/мес (Kc)</label>
+            <input type="number" v-model.number="p.equipmentRent" step="1000">
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Сотрудники -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--purple)"></span> Сотрудники</div>
+
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Админ-учитель опен спейс</div>
+        <div class="row">
+          <div class="col">
+            <label>Тип</label>
+            <select v-model="p.adminType">
+              <option value="monthly">За месяц</option>
+              <option value="hourly">По часам</option>
+            </select>
+          </div>
+          <template v-if="p.adminType==='monthly'">
+            <div class="col"><label>ЗП/мес (Kc)</label><input type="number" v-model.number="p.adminSalary" step="1000"></div>
+          </template>
+          <template v-else>
+            <div class="col"><label>Kc/час</label><input type="number" v-model.number="p.adminRate" step="50"></div>
+            <div class="col"><label>Часов/нед</label><input type="number" v-model.number="p.adminHours" step="1"></div>
+          </template>
+        </div>
+
+        <div style="font-size:11px;color:var(--muted);margin:8px 0 6px">Учитель базового курса</div>
+        <div class="row">
+          <div class="col">
+            <label>Тип</label>
+            <select v-model="p.baseType">
+              <option value="monthly">За месяц</option>
+              <option value="hourly">По часам</option>
+            </select>
+          </div>
+          <template v-if="p.baseType==='monthly'">
+            <div class="col"><label>ЗП/мес (Kc)</label><input type="number" v-model.number="p.baseSalary" step="1000"></div>
+          </template>
+          <template v-else>
+            <div class="col"><label>Kc/час</label><input type="number" v-model.number="p.baseRate" step="50"></div>
+            <div class="col"><label>Часов/нед</label><input type="number" v-model.number="p.baseHours" step="1"></div>
+          </template>
+        </div>
+
+        <div style="font-size:11px;color:var(--muted);margin:8px 0 6px">Учителя тематических курсов</div>
+        <div class="row">
+          <div class="col">
+            <label>Кол-во</label>
+            <input type="number" v-model.number="p.topicTeachers" step="1" min="0">
+          </div>
+          <div class="col">
+            <label>Тип</label>
+            <select v-model="p.topicType">
+              <option value="monthly">За месяц</option>
+              <option value="hourly">По часам</option>
+            </select>
+          </div>
+          <template v-if="p.topicType==='monthly'">
+            <div class="col"><label>ЗП/мес каждый (Kc)</label><input type="number" v-model.number="p.topicSalary" step="1000"></div>
+          </template>
+          <template v-else>
+            <div class="col"><label>Kc/час</label><input type="number" v-model.number="p.topicRate" step="50"></div>
+            <div class="col"><label>Часов/нед</label><input type="number" v-model.number="p.topicHoursWeek" step="1"></div>
+          </template>
+        </div>
+      </div>
+
+      <!-- 4. Содержание -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--red)"></span> Содержание</div>
+        <div class="row">
+          <div class="col"><label>Коммуналка</label><input type="number" v-model.number="p.utilities" step="500"></div>
+          <div class="col"><label>Интернет</label><input type="number" v-model.number="p.internet" step="100"></div>
+          <div class="col"><label>Уборка</label><input type="number" v-model.number="p.cleaning" step="500"></div>
+          <div class="col"><label>Маркетинг</label><input type="number" v-model.number="p.marketing" step="500"></div>
+        </div>
+        <div class="row">
+          <div class="col"><label>Снэки</label><input type="number" v-model.number="p.snacks" step="500"></div>
+          <div class="col"><label>Страховка</label><input type="number" v-model.number="p.insurance" step="500"></div>
+          <div class="col"><label>Софт</label><input type="number" v-model.number="p.software" step="500"></div>
+          <div class="col"><label>Буфер</label><input type="number" v-model.number="p.buffer" step="500"></div>
+        </div>
+      </div>
+
+      <!-- ДОХОДЫ -->
+      <div class="section-label" style="margin-top:12px">Доходы / мес</div>
+
+      <!-- Вводный курс -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--cyan)"></span> Вводный курс (бесплатный лид магнит)</div>
+        <div class="row">
+          <div class="col"><label>Участников/мес</label><input type="number" v-model.number="p.freeLeads" step="1"></div>
+          <div class="col"><label>Конверсия в базовый курс (%)</label><input type="number" v-model.number="p.convToBase" step="5" min="0" max="100"></div>
+          <div class="col"><label>= переходят</label><input type="number" :value="leadsToBase" disabled style="color:var(--green)"></div>
+        </div>
+      </div>
+
+      <!-- Базовый курс -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--green)"></span> Базовый курс</div>
+        <div class="row">
+          <div class="col"><label>Цена курса (Kc)</label><input type="number" v-model.number="p.baseCoursePrice" step="500"></div>
+          <div class="col"><label>Прямые продажи (доп.)</label><input type="number" v-model.number="p.baseCourseDirect" step="1"></div>
+          <div class="col"><label>= всего учеников</label><input type="number" :value="baseCourseStudents" disabled style="color:var(--green)"></div>
+        </div>
+      </div>
+
+      <!-- Подписка -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--blue)"></span> Подписка опен спейс</div>
+        <div class="row">
+          <div class="col"><label>Цена/мес (Kc)</label><input type="number" v-model.number="p.subPrice" step="500"></div>
+          <div class="col"><label>Подписчиков</label><input type="number" v-model.number="p.subCount" step="1"></div>
+        </div>
+      </div>
+
+      <!-- Тематические курсы -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Тематические курсы</div>
+        <div class="row">
+          <div class="col"><label>Цена курса (Kc)</label><input type="number" v-model.number="p.topicCoursePrice" step="500"></div>
+          <div class="col"><label>Курсов/мес</label><input type="number" v-model.number="p.topicCoursesPerMonth" step="1"></div>
+          <div class="col"><label>Учеников/курс</label><input type="number" v-model.number="p.topicStudentsPerCourse" step="1"></div>
+        </div>
+      </div>
+
+      <!-- СТАРТОВЫЕ ВЛОЖЕНИЯ -->
+      <div class="section-label" style="margin-top:12px">Стартовые вложения (единоразово)</div>
+
+      <div class="card">
+        <div class="row">
+          <div class="col"><label>Ремонт</label><input type="number" v-model.number="p.initRenovation" step="5000"></div>
+          <div class="col"><label>Оборудование</label><input type="number" v-model.number="p.initEquipment" step="5000"></div>
+          <div class="col"><label>Маркетинг запуска</label><input type="number" v-model.number="p.initMarketing" step="5000"></div>
+          <div class="col"><label>Прочее</label><input type="number" v-model.number="p.initOther" step="5000"></div>
+        </div>
+      </div>
+
+      <!-- НАЛОГИ -->
+      <div class="card" style="border-color:var(--orange)">
+        <label class="toggle">
+          <input type="checkbox" v-model="p.taxEnabled">
+          <span class="sw"></span>
+          Учитывать налоги
+        </label>
+        <div class="row" v-show="p.taxEnabled">
+          <div class="col">
+            <label>Ставка налога (%)</label>
+            <input type="number" v-model.number="p.taxRate" step="1" min="0" max="100">
+          </div>
+          <div class="col">
+            <label>Соц./здрав. взносы (%)</label>
+            <input type="number" v-model.number="p.socialRate" step="1" min="0" max="100">
+          </div>
+          <div class="col">
+            <label>= налоги/мес</label>
+            <input type="number" :value="taxAmount" disabled style="color:var(--orange)">
+          </div>
+        </div>
+        <div v-show="p.taxEnabled" style="font-size:11px;color:var(--dim);margin-top:4px">CZ: OSVČ ~15% налог + ~45% соцвзносы от прибыли, s.r.o. ~21% + ~34%</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: RESULTS (STICKY) -->
+    <div class="results">
+      <!-- Прибыль -->
+      <div class="result-card">
+        <div class="result-title">Прибыль / мес</div>
+        <div class="metric-big" :class="netProfit >= 0 ? 'positive' : 'negative'">{{ netProfit >= 0 ? '+' : '' }}{{ fmt(netProfit) }} Kc</div>
+        <div class="metric-sub">~{{ fmt(Math.round(netProfit / 25)) }} EUR | Маржа: <strong :class="netMargin >= 0 ? 'positive' : 'negative'">{{ netMargin }}%</strong></div>
+        <div v-show="p.taxEnabled" class="metric-sub" style="color:var(--orange)">налоги: -{{ fmt(taxAmount) }} Kc (до налогов: {{ fmt(profit) }})</div>
+        <div class="bar-track">
+          <div class="bar-fill" :style="{ width: barWidth + '%', background: netProfit >= 0 ? 'var(--green)' : 'var(--red)' }"></div>
+        </div>
+      </div>
+
+      <!-- Доходы -->
+      <div class="result-card">
+        <div class="result-title">Доход: <span class="positive">{{ fmt(totalRevenue) }} Kc</span></div>
+        <div class="brow"><span class="l">Базовый курс ({{ baseCourseStudents }} уч.)</span><span class="v">{{ fmt(revBaseCourse) }}</span></div>
+        <div class="brow"><span class="l">Подписка ({{ p.subCount }} подп.)</span><span class="v">{{ fmt(revSub) }}</span></div>
+        <div class="brow"><span class="l">Тем. курсы ({{ p.topicCoursesPerMonth }}x{{ p.topicStudentsPerCourse }})</span><span class="v">{{ fmt(revTopicCourses) }}</span></div>
+      </div>
+
+      <!-- Расходы -->
+      <div class="result-card">
+        <div class="result-title">Расходы: <span class="negative">{{ fmt(totalExpenses) }} Kc</span></div>
+        <div class="brow"><span class="l">Аренда</span><span class="v">{{ fmt(expRent) }}</span></div>
+        <div class="brow"><span class="l">Оборудование</span><span class="v">{{ fmt(p.equipmentRent) }}</span></div>
+        <div class="brow"><span class="l">Сотрудники</span><span class="v">{{ fmt(expAllStaff) }}</span></div>
+        <div class="brow"><span class="l">Содержание</span><span class="v">{{ fmt(expOps) }}</span></div>
+      </div>
+
+      <!-- Юнит-экономика -->
+      <div class="result-card">
+        <div class="result-title">Юнит-экономика</div>
+        <div class="brow"><span class="l">Детей/мес</span><span class="v">{{ uniqueKids }}</span></div>
+        <div class="brow"><span class="l">Доход/ребёнок</span><span class="v neutral">{{ fmt(revenuePerKid) }} Kc</span></div>
+        <div class="brow"><span class="l">Расход/ребёнок</span><span class="v">{{ fmt(costPerKid) }} Kc</span></div>
+        <div class="brow"><span class="l">Прибыль/ребёнок</span><span class="v" :class="profitPerKid>=0?'positive':'negative'">{{ fmt(profitPerKid) }} Kc</span></div>
+      </div>
+
+      <!-- Безубыточность + окупаемость -->
+      <div class="result-card">
+        <div class="result-title">Точка безубыточности</div>
+        <div class="scenarios">
+          <div class="sc">
+            <div class="sc-label">Подписчиков</div>
+            <div class="sc-val neutral">{{ breakEvenSubs }}</div>
+            <div class="sc-desc">по {{ fmt(p.subPrice) }} Kc</div>
+          </div>
+          <div class="sc">
+            <div class="sc-label">Уч. баз. курса</div>
+            <div class="sc-val neutral">{{ breakEvenBase }}</div>
+            <div class="sc-desc">по {{ fmt(p.baseCoursePrice) }} Kc</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-title">Стартовые: <span class="negative">{{ fmt(totalInit) }} Kc</span></div>
+        <div class="scenarios">
+          <div class="sc">
+            <div class="sc-label">Окупаемость</div>
+            <div class="sc-val" :class="netProfit>0?'positive':'negative'">{{ paybackMonths }}</div>
+            <div class="sc-desc">{{ netProfit > 0 ? 'месяцев' : 'убыток' }}</div>
+          </div>
+          <div class="sc">
+            <div class="sc-label">Прибыль/год</div>
+            <div class="sc-val" :class="netProfit>=0?'positive':'negative'">{{ fmt(netProfit*12) }}</div>
+            <div class="sc-desc">~{{ fmt(Math.round(netProfit*12/25)) }} EUR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const {createApp, reactive, computed, ref} = Vue
+
+createApp({
+  setup(){
+    const p = reactive({
+      // Аренда
+      rentType: 'hourly',
+      rentMonthly: 40000,
+      rentPerHour: 500,
+      rentHoursPerDay: 6,
+      workDays: 22,
+      // Оборудование
+      equipmentRent: 20000,
+      // Сотрудники
+      adminType: 'hourly',
+      adminSalary: 40000,
+      adminRate: 150,
+      adminHours: 30,
+      baseType: 'hourly',
+      baseSalary: 35000,
+      baseRate: 200,
+      baseHours: 6,
+      topicTeachers: 1,
+      topicType: 'hourly',
+      topicSalary: 30000,
+      topicRate: 200,
+      topicHoursWeek: 18,
+      // Содержание
+      utilities: 5000,
+      internet: 1500,
+      cleaning: 4000,
+      marketing: 5000,
+      snacks: 3000,
+      insurance: 2000,
+      software: 2000,
+      buffer: 3000,
+      // Доходы
+      freeLeads: 30,
+      convToBase: 40,
+      baseCoursePrice: 5000,
+      baseCourseDirect: 5,
+      subPrice: 5000,
+      subCount: 15,
+      topicCoursePrice: 3000,
+      topicCoursesPerMonth: 4,
+      topicStudentsPerCourse: 6,
+      // Стартовые
+      initRenovation: 100000,
+      initEquipment: 80000,
+      initMarketing: 50000,
+      initOther: 30000,
+      // Налоги
+      taxEnabled: false,
+      taxRate: 15,
+      socialRate: 45,
+    })
+
+    const num = v => Number(v) || 0
+    const fmt = v => {
+      const n = Math.round(Number(v) || 0)
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
+    }
+
+    // EXPENSES
+    const expRent = computed(() => p.rentType === 'hourly'
+      ? num(p.rentPerHour) * num(p.rentHoursPerDay) * num(p.workDays)
+      : num(p.rentMonthly)
+    )
+    const expAdmin = computed(() => p.adminType === 'hourly'
+      ? num(p.adminRate) * num(p.adminHours) * 4.33
+      : num(p.adminSalary)
+    )
+    const expBase = computed(() => p.baseType === 'hourly'
+      ? num(p.baseRate) * num(p.baseHours) * 4.33
+      : num(p.baseSalary)
+    )
+    const expTopic = computed(() => p.topicType === 'hourly'
+      ? num(p.topicTeachers) * num(p.topicRate) * num(p.topicHoursWeek) * 4.33
+      : num(p.topicTeachers) * num(p.topicSalary)
+    )
+    const expAllStaff = computed(() => expAdmin.value + expBase.value + expTopic.value)
+    const expOps = computed(() => num(p.utilities) + num(p.internet) + num(p.cleaning) + num(p.marketing) + num(p.snacks) + num(p.insurance) + num(p.software) + num(p.buffer))
+    const totalExpenses = computed(() => expRent.value + num(p.equipmentRent) + expAllStaff.value + expOps.value)
+
+    // REVENUE
+    const leadsToBase = computed(() => Math.round(num(p.freeLeads) * num(p.convToBase) / 100))
+    const baseCourseStudents = computed(() => leadsToBase.value + num(p.baseCourseDirect))
+    const revBaseCourse = computed(() => baseCourseStudents.value * num(p.baseCoursePrice))
+    const revSub = computed(() => num(p.subCount) * num(p.subPrice))
+    const revTopicCourses = computed(() => num(p.topicCoursesPerMonth) * num(p.topicStudentsPerCourse) * num(p.topicCoursePrice))
+    const totalRevenue = computed(() => revBaseCourse.value + revSub.value + revTopicCourses.value)
+
+    // PROFIT
+    const profit = computed(() => totalRevenue.value - totalExpenses.value)
+    const taxAmount = computed(() => {
+      if (!p.taxEnabled || profit.value <= 0) return 0
+      return Math.round(profit.value * (num(p.taxRate) + num(p.socialRate)) / 100)
+    })
+    const netProfit = computed(() => profit.value - taxAmount.value)
+    const netMargin = computed(() => totalRevenue.value > 0 ? Math.round(netProfit.value / totalRevenue.value * 100) : 0)
+    const margin = computed(() => totalRevenue.value > 0 ? Math.round(profit.value / totalRevenue.value * 100) : 0)
+    const barWidth = computed(() => {
+      if (totalExpenses.value === 0) return 100
+      return Math.min(Math.max(totalRevenue.value / totalExpenses.value * 100, 0), 100)
+    })
+
+    // UNIT
+    const uniqueKids = computed(() => {
+      return Math.round(baseCourseStudents.value + num(p.subCount) + num(p.topicCoursesPerMonth) * num(p.topicStudentsPerCourse) * 0.6)
+    })
+    const revenuePerKid = computed(() => uniqueKids.value > 0 ? Math.round(totalRevenue.value / uniqueKids.value) : 0)
+    const costPerKid = computed(() => uniqueKids.value > 0 ? Math.round(totalExpenses.value / uniqueKids.value) : 0)
+    const profitPerKid = computed(() => revenuePerKid.value - costPerKid.value)
+
+    // BREAK-EVEN
+    const breakEvenSubs = computed(() => num(p.subPrice) > 0 ? Math.ceil(totalExpenses.value / num(p.subPrice)) : '---')
+    const breakEvenBase = computed(() => num(p.baseCoursePrice) > 0 ? Math.ceil(totalExpenses.value / num(p.baseCoursePrice)) : '---')
+
+    // INIT
+    const totalInit = computed(() => num(p.initRenovation) + num(p.initEquipment) + num(p.initMarketing) + num(p.initOther))
+    const paybackMonths = computed(() => {
+      if (netProfit.value <= 0) return '---'
+      return Math.ceil(totalInit.value / netProfit.value)
+    })
+
+    return {
+      p, fmt,
+      expRent, expAdmin, expBase, expTopic, expAllStaff, expOps, totalExpenses,
+      leadsToBase, baseCourseStudents, revBaseCourse, revSub, revTopicCourses, totalRevenue,
+      profit, margin, barWidth, taxAmount, netProfit, netMargin,
+      uniqueKids, revenuePerKid, costPerKid, profitPerKid,
+      breakEvenSubs, breakEvenBase,
+      totalInit, paybackMonths,
+    }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>
