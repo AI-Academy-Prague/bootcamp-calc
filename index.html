@@ -214,7 +214,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
 
       <!-- Вводный курс -->
       <div class="card">
-        <div class="card-title"><span class="dot" style="background:var(--cyan)"></span> Вводный курс (бесплатный лид магнит)</div>
+        <div class="card-title"><span class="dot" style="background:var(--cyan)"></span> <span style="color:var(--cyan)">Вводный курс</span> (бесплатный лид магнит)</div>
         <div class="row">
           <div class="col"><label>Участников/мес</label><input type="number" v-model.number="p.freeLeads" step="1"></div>
           <div class="col"><label>Конверсия в базовый курс (%)</label><input type="number" v-model.number="p.convToBase" step="5" min="0" max="100"></div>
@@ -224,7 +224,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
 
       <!-- Базовый курс -->
       <div class="card">
-        <div class="card-title"><span class="dot" style="background:var(--green)"></span> Базовый курс</div>
+        <div class="card-title"><span class="dot" style="background:var(--green)"></span> <span style="color:var(--green)">Базовый курс</span></div>
         <div class="row">
           <div class="col"><label>Цена курса (Kc)</label><input type="number" v-model.number="p.baseCoursePrice" step="500"></div>
           <div class="col"><label>Прямые продажи (доп.)</label><input type="number" v-model.number="p.baseCourseDirect" step="1"></div>
@@ -234,7 +234,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
 
       <!-- Подписка -->
       <div class="card">
-        <div class="card-title"><span class="dot" style="background:var(--blue)"></span> Подписка опен спейс</div>
+        <div class="card-title"><span class="dot" style="background:var(--blue)"></span> <span style="color:var(--blue)">Подписка</span> опен спейс</div>
         <div class="row">
           <div class="col"><label>Цена/мес (Kc)</label><input type="number" v-model.number="p.subPrice" step="500"></div>
           <div class="col"><label>Подписчиков</label><input type="number" v-model.number="p.subCount" step="1"></div>
@@ -243,7 +243,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
 
       <!-- Тематические курсы -->
       <div class="card">
-        <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Тематические курсы</div>
+        <div class="card-title"><span class="dot" style="background:var(--orange)"></span> <span style="color:var(--orange)">Тематические</span> курсы</div>
         <div class="row">
           <div class="col"><label>Цена курса (Kc)</label><input type="number" v-model.number="p.topicCoursePrice" step="500"></div>
           <div class="col"><label>Курсов/мес</label><input type="number" v-model.number="p.topicCoursesPerMonth" step="1"></div>
