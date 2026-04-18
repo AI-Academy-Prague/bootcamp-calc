@@ -336,9 +336,10 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <div class="result-card">
         <div class="result-title">Расходы: <span class="negative">{{ fmt(totalExpenses) }} Kc</span></div>
         <div class="brow"><span class="l">Аренда</span><span class="v">{{ fmt(expRent) }}</span></div>
-        <div class="brow"><span class="l">Админ-учитель</span><span class="v">{{ fmt(expAdmin) }}</span></div>
-        <div class="brow"><span class="l">Учитель баз. курса</span><span class="v">{{ fmt(expBase) }}</span></div>
-        <div class="brow"><span class="l">Тем. преподаватели (x{{ p.topicTeachers }})</span><span class="v">{{ fmt(expTopic) }}</span></div>
+        <div class="brow"><span class="l">Сотрудники</span><span class="v">{{ fmt(expAllStaff) }}</span></div>
+        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Админ-учитель</span><span class="v" style="color:var(--dim)">{{ fmt(expAdmin) }}</span></div>
+        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Учитель баз. курса</span><span class="v" style="color:var(--dim)">{{ fmt(expBase) }}</span></div>
+        <div class="brow" style="font-size:11px;padding-left:12px"><span class="l" style="color:var(--dim)">Тем. преподаватели (x{{ p.topicTeachers }})</span><span class="v" style="color:var(--dim)">{{ fmt(expTopic) }}</span></div>
         <div class="brow"><span class="l">Маркетинг</span><span class="v">{{ fmt(expMarketing) }}</span></div>
         <div class="brow"><span class="l">Содержание</span><span class="v">{{ fmt(expOps) }}</span></div>
       </div>
