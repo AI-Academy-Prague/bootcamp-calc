@@ -121,18 +121,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
         </div>
       </div>
 
-      <!-- 2. Оборудование -->
-      <div class="card">
-        <div class="card-title"><span class="dot" style="background:var(--orange)"></span> Аренда оборудования</div>
-        <div class="row">
-          <div class="col">
-            <label>Аренда оборудования/мес (Kc)</label>
-            <input type="number" v-model.number="p.equipmentRent" step="1000">
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Сотрудники -->
+      <!-- 2. Сотрудники -->
       <div class="card">
         <div class="card-title"><span class="dot" style="background:var(--purple)"></span> Сотрудники</div>
 
@@ -195,19 +184,27 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
         </div>
       </div>
 
-      <!-- 4. Содержание -->
+      <!-- Маркетинг -->
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--green)"></span> Маркетинг</div>
+        <div class="row">
+          <div class="col"><label>Маркетинг/мес (Kc)</label><input type="number" v-model.number="p.marketing" step="1000"></div>
+        </div>
+      </div>
+
+      <!-- Содержание -->
       <div class="card">
         <div class="card-title"><span class="dot" style="background:var(--red)"></span> Содержание</div>
         <div class="row">
           <div class="col"><label>Коммуналка</label><input type="number" v-model.number="p.utilities" step="500"></div>
           <div class="col"><label>Интернет</label><input type="number" v-model.number="p.internet" step="100"></div>
           <div class="col"><label>Уборка</label><input type="number" v-model.number="p.cleaning" step="500"></div>
-          <div class="col"><label>Маркетинг</label><input type="number" v-model.number="p.marketing" step="500"></div>
+          <div class="col"><label>Снэки</label><input type="number" v-model.number="p.snacks" step="500"></div>
         </div>
         <div class="row">
-          <div class="col"><label>Снэки</label><input type="number" v-model.number="p.snacks" step="500"></div>
           <div class="col"><label>Страховка</label><input type="number" v-model.number="p.insurance" step="500"></div>
-          <div class="col"><label>Софт</label><input type="number" v-model.number="p.software" step="500"></div>
+          <div class="col"><label>Софт/подписки</label><input type="number" v-model.number="p.software" step="500"></div>
+          <div class="col"><label>Аренда оборудования</label><input type="number" v-model.number="p.equipmentRent" step="1000"></div>
           <div class="col"><label>Буфер</label><input type="number" v-model.number="p.buffer" step="500"></div>
         </div>
       </div>
@@ -339,8 +336,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <div class="result-card">
         <div class="result-title">Расходы: <span class="negative">{{ fmt(totalExpenses) }} Kc</span></div>
         <div class="brow"><span class="l">Аренда</span><span class="v">{{ fmt(expRent) }}</span></div>
-        <div class="brow"><span class="l">Оборудование</span><span class="v">{{ fmt(p.equipmentRent) }}</span></div>
         <div class="brow"><span class="l">Сотрудники</span><span class="v">{{ fmt(expAllStaff) }}</span></div>
+        <div class="brow"><span class="l">Маркетинг</span><span class="v">{{ fmt(expMarketing) }}</span></div>
         <div class="brow"><span class="l">Содержание</span><span class="v">{{ fmt(expOps) }}</span></div>
       </div>
 
@@ -399,7 +396,7 @@ createApp({
     const p = reactive({
       // Аренда
       rentType: 'hourly',
-      rentMonthly: 40000,
+      rentMonthly: 50000,
       rentPerHour: 500,
       rentHoursPerDay: 6,
       workDays: 22,
@@ -423,7 +420,7 @@ createApp({
       utilities: 5000,
       internet: 1500,
       cleaning: 4000,
-      marketing: 5000,
+      marketing: 10000,
       snacks: 3000,
       insurance: 2000,
       software: 2000,
@@ -474,8 +471,9 @@ createApp({
       : num(p.topicTeachers) * num(p.topicSalary)
     )
     const expAllStaff = computed(() => expAdmin.value + expBase.value + expTopic.value)
-    const expOps = computed(() => num(p.utilities) + num(p.internet) + num(p.cleaning) + num(p.marketing) + num(p.snacks) + num(p.insurance) + num(p.software) + num(p.buffer))
-    const totalExpenses = computed(() => expRent.value + num(p.equipmentRent) + expAllStaff.value + expOps.value)
+    const expMarketing = computed(() => num(p.marketing))
+    const expOps = computed(() => num(p.utilities) + num(p.internet) + num(p.cleaning) + num(p.snacks) + num(p.insurance) + num(p.software) + num(p.equipmentRent) + num(p.buffer))
+    const totalExpenses = computed(() => expRent.value + expAllStaff.value + expMarketing.value + expOps.value)
 
     // REVENUE
     const leadsToBase = computed(() => Math.round(num(p.freeLeads) * num(p.convToBase) / 100))
@@ -533,7 +531,7 @@ createApp({
 
     return {
       p, fmt,
-      expRent, expAdmin, expBase, expTopic, expAllStaff, expOps, totalExpenses,
+      expRent, expAdmin, expBase, expTopic, expAllStaff, expMarketing, expOps, totalExpenses,
       leadsToBase, baseCourseStudents, revBaseCourse, revSub, revTopicCourses, totalRevenue,
       profit, margin, barWidth, taxOnProfit, taxOnSalary, taxAmount, netProfit, netMargin,
       uniqueKids, revenuePerKid, costPerKid, profitPerKid,
