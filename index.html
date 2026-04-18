@@ -362,12 +362,13 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <!-- Безубыточность + окупаемость -->
       <div class="result-card">
         <div class="result-title">Точка безубыточности</div>
-        <div class="scenarios">
+        <div class="scenarios" style="position:relative">
           <div class="sc">
             <div class="sc-label">Подписчиков</div>
             <div class="sc-val neutral">{{ breakEvenSubs }}</div>
             <div class="sc-desc">по {{ cfmt(p.subPrice) }} {{ curSymbol }}</div>
           </div>
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--surface);border:1px solid var(--border);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;z-index:1">или</div>
           <div class="sc">
             <div class="sc-label">Уч. баз. курса</div>
             <div class="sc-val neutral">{{ breakEvenBase }}</div>
