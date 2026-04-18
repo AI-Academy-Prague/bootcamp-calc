@@ -327,9 +327,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.3}
       <!-- Доходы -->
       <div class="result-card">
         <div class="result-title">Доход: <span class="positive">{{ fmt(totalRevenue) }} Kc</span></div>
-        <div class="brow"><span class="l">Базовый курс ({{ baseCourseStudents }} уч.)</span><span class="v">{{ fmt(revBaseCourse) }}</span></div>
-        <div class="brow"><span class="l">Подписка ({{ p.subCount }} подп.)</span><span class="v">{{ fmt(revSub) }}</span></div>
-        <div class="brow"><span class="l">Тем. курсы ({{ p.topicCoursesPerMonth }}x{{ p.topicStudentsPerCourse }})</span><span class="v">{{ fmt(revTopicCourses) }}</span></div>
+        <div class="brow"><span class="l"><span style="color:var(--green)">Базовый</span> курс ({{ baseCourseStudents }} уч.)</span><span class="v">{{ fmt(revBaseCourse) }}</span></div>
+        <div class="brow"><span class="l"><span style="color:var(--blue)">Подписка</span> ({{ p.subCount }} подп.)</span><span class="v">{{ fmt(revSub) }}</span></div>
+        <div class="brow"><span class="l"><span style="color:var(--orange)">Тем. курсы</span> ({{ p.topicCoursesPerMonth }}x{{ p.topicStudentsPerCourse }})</span><span class="v">{{ fmt(revTopicCourses) }}</span></div>
       </div>
 
       <!-- Расходы -->
